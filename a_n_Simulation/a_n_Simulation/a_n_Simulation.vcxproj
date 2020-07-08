@@ -141,6 +141,9 @@
   <ItemGroup>
     <ClCompile Include="a_n_Simulation.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="a_n_functions.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
