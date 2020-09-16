@@ -18,15 +18,10 @@ const double g = 9.81; //m/s^2 gravitational constant
 const double zo = pow(pow(h,2)/(2.0*g*pow(m_n, 2)),1.0/3.0);
 const double gam_n = 183e6;
 const double mu_n = -1.0*gam_n*h/2; //neutron magnetic moment
-const double v = 5.5; //m/s
-const double L = 0.16; //m/s
+const double L = 0.16; //m
 const double d = 1e-2; //m
-const double f = 130; //Hz
-const double w = 2*pi*v/d; //rad/s
-const double wd = 2*pi*f;
-const double p = 4*pi/4;
-const double Ia = 1.4; //A
-const double Ib = 3.5; //A
+const double Ia = 1.41; //A (Experiment 1.41 A, Feb Experiment 2.04 A,AC paper 1.4 A)
+const double Ib = 3.82; //A (Experiment 3.82 A, Feb Experiment 5.2 A, AC paper 3.5 A)
 const double mu = 4*pi*1e-7;
 const double dx = 1e-3; //mm wire cross section length
 const double dz = 1e-3; //mm wire cross section height
@@ -36,10 +31,19 @@ const double k = -(mu*d/(pow(pi,2)*dx*dz))*exp(-2*pi*Dz/d)*sinh(pi*dz/d)*sin(pi*
 double dt;
 double TF;
 double t;
+double v;
+double dv;
+double w; //rad/s
+double f; //Hz
+double df;
+double wd; //rad/s
+double p; //rad
+double dp;
 double t_2;
 double t_3;
 double Bx;
 double Bz;
+double sum;
 int m;
 int l;
 
@@ -65,18 +69,23 @@ ArrayXcd dadt(N,1);
 ArrayXXd b(3,3);
 ArrayXXd Bo(3,3); //time dependent magnetic field coefficients
 ArrayXd Bh(3); //holding magnetic field
+ArrayXXd sum1(2,2); //
+ArrayXXd sum2(2,2); //
+ArrayXXd sum3(2,2); //
 
-const char* mode = "AC";
+const char* mag_mode = "AC"; //"DC" or "AC"
 
-ArrayXXd B(double t, ArrayXd Bh, ArrayXXd Bo, const char* mode)
+ArrayXXd B(double t, double v, double p, double f,ArrayXd Bh, ArrayXXd Bo, const char* mode)
 {
-    if (strcmp(mode,"DC") == 0) {
+    w = 2 * pi * v / d; //rad/s
+    wd = 2 * pi * f;
+    if (strcmp(mag_mode,"DC") == 0) {
         b << Bh(0) + Bo(0,0)*sin(w*t), Bh(1) + Bo(0,1), Bh(2) + Bo(0,2)*cos(w*t),
                      Bo(1,0)*sin(w*t),         Bo(1,1),         Bo(1,2)*cos(w*t),
                      Bo(2,0)*sin(w*t),         Bo(2,1),         Bo(2,2)*cos(w*t);
         return b;
     }
-    else if (strcmp(mode, "AC") == 0) {
+    else if (strcmp(mag_mode, "AC") == 0) {
         Bx = k*cos(wd*t + p)*(Ia*((sqrt(2) - 2)*cos(w*t) + sqrt(2)*sin(w*t)) + Ib*((sqrt(2) + 2)*sin(w*t) - sqrt(2)*cos(w*t)));
         Bz = k*cos(wd*t + p)*(Ia*((sqrt(2) - 2)*sin(w*t) - sqrt(2)*cos(w*t)) - Ib*((sqrt(2) + 2)*cos(w*t) + sqrt(2)*sin(w*t)));
         b <<      Bh(0) + Bx, Bh(1),       Bh(2) + Bz,
