@@ -62,7 +62,7 @@ int main()
                 cout << "\n   spin up" << endl;
                 a << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0;
 
-                ofstream uout("coeff4-1_up_Ia2.04_Ib5.2_AC_n1234_f273.9_v4.0_ppi0_L0.5m.csv");
+                ofstream uout("coeff4-1_down_Ia2.04_Ib5.2_AC_n1234_f273.9_v4.0_ppi0_L0.5m.csv");
                 if (!uout)
                 {
                     cout << "\n error" << endl;
@@ -141,7 +141,8 @@ int main()
     }
     else if (strcmp(sim_mode, "transition") == 0) 
     {
-        ofstream fout("trans3-1_Ia1.41_Ib3.82_AC_n1234_f189-213_v3.0_p0.0.csv");
+        //ofstream fout("weighted_trans1-1_z0.809_Ia1.41_Ib3.82_AC_n1234_f250-280_v3.0_p0.0.csv");
+        ofstream fout("weighted_trans4-1_z1.3_Ia1.6_Ib4.0_AC_n1234_f255-295_v3.0_p0.0_L0.2.csv");
         if (!fout)
         {
             cout << "\n error" << endl;
@@ -153,7 +154,7 @@ int main()
         fout << "driving frequency(Hz)" << "," << "a1" << "," << "up-a1_up" << "," << "up-a1_down" << "," << "down-a1_up" << "," << "down-a1_down" << "\n";
 
         df = 1;
-        for (f = 189; f <= 213; f = f + df)
+        for (f = 255; f <= 295; f = f + df)
         {
             sum = 0;
             sum1 << 0.0, 0.0,
@@ -174,11 +175,19 @@ int main()
                     {
                         if (s == 0) {
                             cout << "   spin up" << endl;
-                            a << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
+                            //a << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0; 
+                            //a << 0.0403, 0.0, 0.3256, 0.0, 0.7656, 0.0, 0.5261, 0.0; //n = 1 before step(21 um)
+                            //a << -0.0270, 0.0, -0.1663, 0.0, -0.1418, 0.0, 0.5231, 0.0; //n = 2 before step(21 um)
+                            //a << 0.0214, 0.0, 0.1190, 0.0, 0.0846, 0.0, -0.1990, 0.0; //n = 3 before step(21 um)
+                            a << -0.0179, 0.0, -0.0947, 0.0, -0.0630, 0.0, 0.1283, 0.0; //n = 4 before step(21 um)
                         }
                         else {
                             cout << "   spin down" << endl;
-                            a << 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
+                            //a << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+                            //a << 0.0, 0.0403, 0.0, 0.3256, 0.0, 0.7656, 0.0, 0.5261; //n = 1 before step(21 um)
+                            //a << 0.0, -0.0270, 0.0, -0.1663, 0.0, -0.1418, 0.0, 0.5231; //n = 2 before step(21 um)
+                            //a << 0.0, 0.0214, 0.0, 0.1190, 0.0, 0.0846, 0.0, -0.1990; //n = 3 before step(21 um)
+                            a << 0.0, -0.0179, 0.0, -0.0947, 0.0, -0.0630, 0.0, 0.1283; //n = 4 before step(21 um)
                         }
                         cout << "       " << "v = " << v << endl;
                         i = 1;

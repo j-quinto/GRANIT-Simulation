@@ -18,14 +18,17 @@ const double g = 9.81; //m/s^2 gravitational constant
 const double zo = pow(pow(h,2)/(2.0*g*pow(m_n, 2)),1.0/3.0);
 const double gam_n = 183e6;
 const double mu_n = -1.0*gam_n*h/2; //neutron magnetic moment
-const double L = 0.16; //m
+const double L = 0.20; //0.16 m
 const double d = 1e-2; //m
-const double Ia = 1.41; //A (Experiment 1.41 A, Feb Experiment 2.04 A,AC paper 1.4 A)
-const double Ib = 3.82; //A (Experiment 3.82 A, Feb Experiment 5.2 A, AC paper 3.5 A)
+const double Ia = 1.6; //A (Experiment 1.41 A, Feb Experiment 2.04 A,AC paper 1.4 A)
+const double Ib = 4.0; //A (Experiment 3.82 A, Feb Experiment 5.2 A, AC paper 3.5 A)
+//const double Ia = 2.05; //A (test: Beta_0 = 0.4763 T/m)
+//const double Ib = 5.15; //A (test: Beta_0 = 0.4763 T/m)
 const double mu = 4*pi*1e-7;
 const double dx = 1e-3; //mm wire cross section length
 const double dz = 1e-3; //mm wire cross section height
-const double Dz = 1.3e-3; //mm distance between center of wire to the mirror
+const double Dz = 1.3e-3; //mm distance between center of wire to the mirror 
+//const double Dz = 0.809e-3; //mm (test: Beta_0 = 0.4760 T/m)
 const double k = -(mu*d/(pow(pi,2)*dx*dz))*exp(-2*pi*Dz/d)*sinh(pi*dz/d)*sin(pi*dx/d);
 //const double w = 2910.0 - 200.0; //rad/s
 double dt;
