@@ -49,6 +49,7 @@ double Bz;
 double sum;
 int m;
 int l;
+int ni;
 
 complex<double> dadt_u;
 complex<double> dadt_d;

@@ -12,7 +12,7 @@ int prog_size;
 int i;
 int s;
 
-const char* sim_mode = "transition"; //"coefficient" or "transition profile"
+const char* sim_mode = "transition2"; //"coefficient" or "transition profile"
 int main()
 {
     //RK4 func approx
@@ -139,7 +139,8 @@ int main()
         }
                
     }
-    else if (strcmp(sim_mode, "transition") == 0) 
+    //transition1: Finds the Probability of a Transition to the ground state over a frequency range with just one initial state n
+    else if (strcmp(sim_mode, "transition1") == 0) 
     {
         //ofstream fout("weighted_trans1-1_z0.809_Ia1.41_Ib3.82_AC_n1234_f250-280_v3.0_p0.0.csv");
         ofstream fout("weighted_trans4-1_z1.3_Ia1.6_Ib4.0_AC_n1234_f255-295_v3.0_p0.0_L0.2.csv");
@@ -238,6 +239,127 @@ int main()
             sum = (sum1.sum() + sum2.sum() + sum3.sum())*0.5;
             cout << "f = " << f << ", a1 = " << sum << endl;
             fout << f << "," << sum << "," << sum2(0,0) << "," << sum2(0,1) << "," << sum2(1, 0) << "," << sum2(1, 1) << "\n";
+        }
+    }
+    //transition2: Finds the Probability of a Transition to the ground state over a frequency range with initial states n = 1,2,3,4
+    else if (strcmp(sim_mode, "transition2") == 0)
+    {
+        //ofstream fout("weighted_trans1-1_z0.809_Ia1.41_Ib3.82_AC_n1234_f250-280_v3.0_p0.0.csv");
+        ofstream fout("TEST_weighted_trans_z1.3_Ia1.6_Ib4.0_AC_n1234_f255-257_v3.0_p0.0_L0.2.csv");
+        if (!fout)
+        {
+            cout << "\n error" << endl;
+        }
+        fout << scientific;
+        fout.precision(8);
+
+        //fout << "driving frequency(Hz)" << "," << "phase(rad)" << "," << "v(m/s)" << "," << "a1" << "\n";
+        fout << "driving frequency(Hz)" << "," << "a1" << "\n";
+
+        df = 1;
+        for (f = 255; f <= 257; f = f + df)
+        {
+            sum = 0;
+            cout << "f = " << f << endl;
+            dp = pi / 3.0;
+            for (ni = 1; ni <= 4; ni = ni + 1) //energy states
+            {
+                cout << " n = " << ni << endl;
+                sum1 << 0.0, 0.0,
+                    0.0, 0.0;
+                sum2 << 0.0, 0.0,
+                    0.0, 0.0;
+                sum3 << 0.0, 0.0,
+                    0.0, 0.0;
+                for (p = 0; p <= 0; p = p + dp)
+                {
+                    cout << "   " << "p = " << p << endl;
+                    dv = 1.5;
+                    for (v = 3.0; v <= 3.0; v = v + dv)
+                    {
+                        for (s = 0; s <= 1; s = s + 1) //spin states
+                        {
+                            if (s == 0) {
+                                cout << "   spin up" << endl;
+                                if (ni == 1) {
+                                    a << 0.0403, 0.0, 0.3256, 0.0, 0.7656, 0.0, 0.5261, 0.0; //n = 1 before step(21 um)
+                                }
+                                else if (ni == 2) {
+                                    a << -0.0270, 0.0, -0.1663, 0.0, -0.1418, 0.0, 0.5231, 0.0; //n = 2 before step(21 um)
+                                }
+                                else if (ni == 3) {
+                                    a << 0.0214, 0.0, 0.1190, 0.0, 0.0846, 0.0, -0.1990, 0.0; //n = 3 before step(21 um)
+                                }
+                                else if (ni == 4) {
+                                    a << -0.0179, 0.0, -0.0947, 0.0, -0.0630, 0.0, 0.1283, 0.0; //n = 4 before step(21 um)
+                                }
+                            }
+                            else {
+                                cout << "   spin down" << endl;
+                                if (ni == 1) {
+                                    a << 0.0, 0.0403, 0.0, 0.3256, 0.0, 0.7656, 0.0, 0.5261; //n = 1 before step(21 um)
+                                }
+                                else if (ni == 2) {
+                                    a << 0.0, -0.0270, 0.0, -0.1663, 0.0, -0.1418, 0.0, 0.5231; //n = 2 before step(21 um)
+                                }
+                                else if (ni == 3) {
+                                    a << 0.0, 0.0214, 0.0, 0.1190, 0.0, 0.0846, 0.0, -0.1990; //n = 3 before step(21 um)
+                                }
+                                else if (ni == 4) {
+                                    a << 0.0, -0.0179, 0.0, -0.0947, 0.0, -0.0630, 0.0, 0.1283; //n = 4 before step(21 um)
+                                }
+                            }
+                            cout << "       " << "v = " << v << endl;
+                            i = 1;
+                            TF = L / v;
+                            prog_len = TF / dt;
+                            prog_size = prog_len / 50;
+                            cout << "           " << 0 << "%" << "\r" << flush;
+                            for (t = 0.0; t <= TF; t = t + dt)
+                            {
+                                t_2 = t + 0.5 * dt;
+                                t_3 = t + dt;
+
+                                k1 = da_dt(t, a, B(t, v, p, f, Bh, Bo, mag_mode));
+                                k2 = da_dt(t_2, a + dt * k1 / 2, B(t_2, v, p, f, Bh, Bo, mag_mode));
+                                k3 = da_dt(t_2, a + dt * k2 / 2, B(t_2, v, p, f, Bh, Bo, mag_mode));
+                                k4 = da_dt(t_3, a + dt * k3, B(t_3, v, p, f, Bh, Bo, mag_mode));
+                                a = a + dt * (k1 + 2 * k2 + 2 * k3 + k4) / 6;
+                                A = a.abs2();
+                                //output
+                                i++;
+                                if (i % prog_size == 0)
+                                {
+                                    cout << "           " << 100 * (double)i / prog_len << "%" << "\r" << flush;
+                                    //cout << "           " << "a1 = " << A(0) + A(1) << endl;
+
+                                }
+                            }
+                            cout << "           " << "a1 = " << A(0) + A(1) << endl;
+                            //fout << f << "," << p << "," << v << "," << A(0) + A(1) << "\n";
+                            if (v == 2.5) {
+                                //sum1(s) = sum1(s) + (A(0) + A(1))*0.159;
+                                sum1(0, s) = A(0);
+                                sum1(1, s) = A(1);
+                            }
+                            else if (v == 3.0) {
+                                //sum2(s) = sum2(s) + (A(0) + A(1)) * 0.682;
+                                sum2(0, s) = A(0);
+                                sum2(1, s) = A(1);
+                            }
+                            else if (v == 5.5) {
+                                //sum1(s) = sum1(s) + (A(0) + A(1))*0.159;
+                                sum3(0, s) = A(0);
+                                sum3(1, s) = A(1);
+                            }
+                        }
+                    }
+        
+                }
+                sum = sum + (sum1.sum() + sum2.sum() + sum3.sum())*0.5;
+            }
+            cout << "f = " << f << ", a1 = " << sum*0.25 << endl;
+            fout << f << "," << sum * 0.25 <<  "\n";
         }
     }
 }
